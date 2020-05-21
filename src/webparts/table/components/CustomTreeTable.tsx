@@ -1,5 +1,6 @@
 import React from "react";
-import { Table, Checkbox, Button, DOMHelper, Icon } from "rsuite";
+import { Table, Checkbox as Checkfield, Button, DOMHelper, Icon } from "rsuite";
+import { Checkbox  } from 'office-ui-fabric-react';
 import 'rsuite/dist/styles/rsuite-default.css';
 import TablePagination from "rsuite/lib/Table/TablePagination";
 //import 'rsuite-table/dist/css/rsuite-table.css'
@@ -129,6 +130,45 @@ let data = [
   }
 ];
 
+const ActionCell = ({ rowData, dataKey, onClick, ...props }) => {
+  return (
+    <Cell {...props} style={{ padding: '6px 0' }}>
+      <Button
+        appearance="link"
+        onClick={() => {
+         alert('clicked'+rowData.id)
+        }}
+      >
+        {rowData.status === 'EDIT' ? 'Save' : 'Edit'}
+      </Button>
+    </Cell>
+  );
+};
+
+
+
+//Checkbox
+// const SelectionCell = ({ rowData, dataKey, onClick, ...props }) => {
+//   return (
+//     <Cell {...props} style={{ padding: '6px 0' }}>
+//       <Checkbox
+//       onChange = {(ele,newChecked)=>{
+//         debugger;
+//         this.state
+//         //onChange(rowData,newChecked)
+//       }}
+     
+//         onClick={() => {
+//          alert('clicked'+rowData.id)
+//         }}
+//       >
+//       </Checkbox>
+//     </Cell>
+//   );
+// };
+
+
+
 class TableTree extends React.Component<any,any> {
   constructor(props) {
     super(props);
@@ -143,6 +183,29 @@ class TableTree extends React.Component<any,any> {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeLength = this.handleChangeLength.bind(this);
   }
+
+
+  SelectionCell = ({ rowData, dataKey, onClick, ...props }) => {
+    return (
+      <Cell {...props} style={{ padding: '6px 0' }}>
+        <Checkbox
+        onChange = {(ele,newChecked)=>{
+         if(this.state.rowId!=rowData.id)
+             this.setState({rowId:rowData.id})
+             else
+             this.setState({rowId:null})
+        }}
+        checked = {this.state.rowId==rowData.id}
+       
+          onClick={() => {
+           alert('clicked'+rowData.id)
+          }}
+        >
+        </Checkbox>
+      </Cell>
+    );
+  };
+  
   changeHeight = () => {
     const cur_height = this.state.height;
     this.setState({
@@ -213,10 +276,10 @@ class TableTree extends React.Component<any,any> {
           }}
           defaultExpandedRowKeys = {["1","1-1"]}
           onRowClick = {(rowData) =>{
-            if(this.state.rowId!=rowData.id)
-             this.setState({rowId:rowData.id})
-             else
-             this.setState({rowId:null})
+            // if(this.state.rowId!=rowData.id)
+            //  this.setState({rowId:rowData.id})
+            //  else
+            //  this.setState({rowId:null})
           }}
 
           // renderTreeToggle={(icon, rowData) => {
@@ -226,7 +289,13 @@ class TableTree extends React.Component<any,any> {
           //   return icon;
           // }}
         >
-          <Column width={400}>
+
+          <Column width={50} align={'right'} verticalAlign={'middle'}>
+            <HeaderCell>Label</HeaderCell>
+            <this.SelectionCell dataKey="id" rowData={{}} onClick={()=>{}} align={'right'} verticalAlign={'middle'}/>
+          </Column>
+
+          <Column width={200} treeCol={true} sortable={true}>
             <HeaderCell>Label</HeaderCell>
             <Cell dataKey="labelName" />
           </Column>
@@ -243,12 +312,12 @@ class TableTree extends React.Component<any,any> {
 
           <Column width={100}>
             <HeaderCell>Status</HeaderCell>
-            <Cell dataKey="status" />
+            <Cell dataKey="status" ></Cell>
           </Column>
 
           <Column width={100}>
             <HeaderCell>Status</HeaderCell>
-            <Cell dataKey="status" />
+            <ActionCell dataKey="id" rowData={{}} onClick={()=>{}} />
           </Column>
 
           <Column width={100}>

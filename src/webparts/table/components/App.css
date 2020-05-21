@@ -1,4 +1,36 @@
 .custom-row-select{
-    border:1px solid red;
-    
+    border:1px solid blue;
 }
+.custom-row-select:hover {
+    background: #2196f3!important;
+    color:white!important;
+}
+.custom-row-select .rs-table-row {
+    /* background: red!important; */
+    background: #2196f3!important;
+    color:white!important;
+  }
+  .custom-row-select .rs-table-cell-group {
+    /* background: red!important; */
+    background: #2196f3!important;
+    color:white!important;
+
+  }
+  .custom-row-select .rs-table-cell {
+    /* background: red!important; */
+    background: #2196f3!important;
+    color:white!important;
+  }
+
+  .custom-row-select .rs-table-hover .rs-table-row:hover {
+    background: #2196f3!important;
+    color:white!important;
+  }
+  .custom-row-select .rs-table-hover .rs-table-row:hover .rs-table-cell-group {
+    background: #2196f3!important;
+    color:white!important;
+  }
+  .custom-row-select .rs-table-hover .rs-table-row:hover .rs-table-cell {
+    background: #2196f3!important;
+    color:white!important;
+  }
