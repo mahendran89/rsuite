@@ -1,9 +1,12 @@
 import React from "react";
 import { Table, Checkbox, Button, DOMHelper, Icon } from "rsuite";
-import 'rsuite-table/dist/css/rsuite-table.css'
+import 'rsuite/dist/styles/rsuite-default.css';
+import TablePagination from "rsuite/lib/Table/TablePagination";
+//import 'rsuite-table/dist/css/rsuite-table.css'
 //import "rsuite/dist/styles/rsuite.min.css";
 // import { Table,Input } from 'antd';
 // import styles from "./index.less";
+import './App.css';
 const { Column, HeaderCell, Cell, Pagination } = Table;
 const { addClass, scrollTop } = DOMHelper;
 
@@ -131,8 +134,14 @@ class TableTree extends React.Component<any,any> {
     super(props);
     this.state = {
       data: data,
-      height: 500
+      height: 500,
+      displayLength: 10,
+      loading: false,
+      page: 1,
+      rowId:null
     };
+    this.handleChangePage = this.handleChangePage.bind(this);
+    this.handleChangeLength = this.handleChangeLength.bind(this);
   }
   changeHeight = () => {
     const cur_height = this.state.height;
@@ -140,6 +149,28 @@ class TableTree extends React.Component<any,any> {
       height: cur_height === 400 ? 200 : 400
     });
   };
+  handleChangePage(dataKey) {
+    this.setState({
+      page: dataKey
+    });
+  }
+
+  handleChangeLength(dataKey) {
+    this.setState({
+      page: 1,
+      displayLength: dataKey
+    });
+  }
+
+  getData() {
+    const { displayLength, page } = this.state;
+
+    return data.filter((v, i) => {
+      const start = displayLength * (page - 1);
+      const end = start + displayLength;
+      return i >= start && i < end;
+    });
+  }
   // addData = () => {
   //   debugger;
   //   const cur_data = [...this.state.data, ...this.state.data];
@@ -153,31 +184,47 @@ class TableTree extends React.Component<any,any> {
   //     }
   //   );
   // };
+ 
   render() {
-    const { data, height } = this.state;
+    //const { data, height } = this.state;
+    const data = this.getData();
+    const { loading, displayLength, page, height } = this.state;
 
     return (
       <div>
         <Button
           onClick={this.changeHeight}
-        >{`改变高度,当前高度${height}`}</Button>
+        >{`Change Height${height}`}</Button>
         {/* <Button onClick={this.addData}>添加数据</Button> */}
         <Table
+        rowClassName={rowData => {
+          if (this.state.rowId && rowData && rowData.id == this.state.rowId) {
+            return 'custom-row-select';
+          }
+          return 'default-row';
+        }}
           isTree
           virtualized
-          defaultExpandAllRows
           rowKey="id"
           height={height}
           data={data}
           onExpandChange={(isOpen, rowData) => {
             console.log(isOpen, rowData);
           }}
-          renderTreeToggle={(icon, rowData) => {
-            if (rowData.children && rowData.children.length === 0) {
-              return <Icon icon="spinner" spin />;
-            }
-            return icon;
+          defaultExpandedRowKeys = {["1","1-1"]}
+          onRowClick = {(rowData) =>{
+            if(this.state.rowId!=rowData.id)
+             this.setState({rowId:rowData.id})
+             else
+             this.setState({rowId:null})
           }}
+
+          // renderTreeToggle={(icon, rowData) => {
+          //   if (rowData.children && rowData.children.length === 0) {
+          //     return <Icon icon="spinner" spin />;
+          //   }
+          //   return icon;
+          // }}
         >
           <Column width={400}>
             <HeaderCell>Label</HeaderCell>
@@ -234,6 +281,23 @@ class TableTree extends React.Component<any,any> {
             <Cell dataKey="status" />
           </Column>
         </Table>
+        <TablePagination
+          lengthMenu={[
+            {
+              value: 10,
+              label: 10
+            },
+            {
+              value: 20,
+              label: 20
+            }
+          ]}
+          activePage={page}
+          displayLength={displayLength}
+          total={data.length}
+          onChangePage={this.handleChangePage}
+          onChangeLength={this.handleChangeLength}
+        />
       </div>
     );
   }
