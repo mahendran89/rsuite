@@ -178,22 +178,31 @@ class TableTree extends React.Component<any,any> {
       displayLength: 10,
       loading: false,
       page: 1,
-      rowId:null
+      rowId:null,
+      scroll:false
     };
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeLength = this.handleChangeLength.bind(this);
   }
-
+  myRef = React.createRef<TableTree>()
+  body;
 
   SelectionCell = ({ rowData, dataKey, onClick, ...props }) => {
     return (
       <Cell {...props} style={{ padding: '6px 0' }}>
         <Checkbox
         onChange = {(ele,newChecked)=>{
+          debugger;
+          console.log(this.body)
+          let scroll = scrollTop(this.body.scrollHeight);
+          //alert(scroll)
+          console.log(this.body)
+          if(this.state.scroll)
+          this.setState({scroll:false})
          if(this.state.rowId!=rowData.id)
-             this.setState({rowId:rowData.id})
+             this.setState({rowId:rowData.id},()=>{/*scrollTop(this.body.parentElement,scroll)*/})
              else
-             this.setState({rowId:null})
+             this.setState({rowId:null},()=>{/*scrollTop(this.body.parentElement,scroll)*/})
         }}
         checked = {this.state.rowId==rowData.id}
        
@@ -209,7 +218,8 @@ class TableTree extends React.Component<any,any> {
   changeHeight = () => {
     const cur_height = this.state.height;
     this.setState({
-      height: cur_height === 400 ? 200 : 400
+      height: cur_height === 400 ? 200 : 400,
+      scroll:true
     });
   };
   handleChangePage(dataKey) {
@@ -260,6 +270,10 @@ class TableTree extends React.Component<any,any> {
         >{`Change Height${height}`}</Button>
         {/* <Button onClick={this.addData}>添加数据</Button> */}
         <Table
+        bodyRef={ref => {
+          this.body = ref;
+        }}
+
         rowClassName={rowData => {
           if (this.state.rowId && rowData && rowData.id == this.state.rowId) {
             return 'custom-row-select';
@@ -270,6 +284,7 @@ class TableTree extends React.Component<any,any> {
           virtualized
           rowKey="id"
           height={height}
+          shouldUpdateScroll={this.state.scroll}
           data={data}
           onExpandChange={(isOpen, rowData) => {
             console.log(isOpen, rowData);
